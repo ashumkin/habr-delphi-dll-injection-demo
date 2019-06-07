@@ -27,7 +27,7 @@
     </RunParams>
     <Units Count="1">
       <Unit0>
-        <Filename Value="DLLInjectionDemo.lpr"/>
+        <Filename Value="DLLInjectionDemo.dpr"/>
         <IsPartOfProject Value="True"/>
       </Unit0>
     </Units>

@@ -1,6 +1,8 @@
-library injector;
+﻿library injector;
 
+{$IFDEF FPC}
 {$mode objfpc}{$H+}
+{$ENDIF FPC}
 
 uses
   Windows, StrUtils;
@@ -35,7 +37,7 @@ function ImageDirectoryEntryToData(Base: Pointer; MappedAsImage: Boolean;
 
 procedure NewSleep(dwMilliseconds:DWORD); stdcall;
 begin
-  WriteLn('New Sleep');
+  WriteLn('New sleep instead of ', dwMilliseconds);
 end;
 
 function Inject: Boolean;

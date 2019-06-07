@@ -1,6 +1,8 @@
 library victim;
 
+{$IFDEF FPC}
 {$mode objfpc}{$H+}
+{$ENDIF FPC}
 
 uses
   Classes, Windows;

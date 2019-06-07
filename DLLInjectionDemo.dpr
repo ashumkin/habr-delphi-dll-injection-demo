@@ -1,13 +1,18 @@
 program DLLInjectionDemo;
 
+{$IFDEF FPC}
 {$mode objfpc}{$H+}
+{$ENDIF FPC}
 
 uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
   Classes, SysUtils, Windows, CustApp
-  { you can add units after this };
+{$IFNDEF FPC}
+  , System.Generics.Collections
+{$ENDIF !FPC}
+  ;
 
 type
 

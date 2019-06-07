@@ -28,7 +28,7 @@
     </RunParams>
     <Units Count="1">
       <Unit0>
-        <Filename Value="victim.lpr"/>
+        <Filename Value="victim.dpr"/>
         <IsPartOfProject Value="True"/>
       </Unit0>
     </Units>

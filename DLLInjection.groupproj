@@ -1,0 +1,60 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{204F866B-BEA9-4CA8-BFD4-83BA13D3250C}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="DLLInjectionDemo.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="injector.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="victim.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="DLLInjectionDemo">
+        <MSBuild Projects="DLLInjectionDemo.dproj"/>
+    </Target>
+    <Target Name="DLLInjectionDemo:Clean">
+        <MSBuild Projects="DLLInjectionDemo.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DLLInjectionDemo:Make">
+        <MSBuild Projects="DLLInjectionDemo.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="injector">
+        <MSBuild Projects="injector.dproj"/>
+    </Target>
+    <Target Name="injector:Clean">
+        <MSBuild Projects="injector.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="injector:Make">
+        <MSBuild Projects="injector.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="victim">
+        <MSBuild Projects="victim.dproj"/>
+    </Target>
+    <Target Name="victim:Clean">
+        <MSBuild Projects="victim.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="victim:Make">
+        <MSBuild Projects="victim.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="DLLInjectionDemo;injector;victim"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="DLLInjectionDemo:Clean;injector:Clean;victim:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="DLLInjectionDemo:Make;injector:Make;victim:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
