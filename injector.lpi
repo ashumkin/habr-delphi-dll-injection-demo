@@ -47,6 +47,9 @@
       <RelocatableUnit Value="True"/>
     </CodeGeneration>
     <Linking>
+      <Debugging>
+        <UseExternalDbgSyms Value="True"/>
+      </Debugging>
       <Options>
         <ExecutableType Value="Library"/>
       </Options>

@@ -5,7 +5,7 @@
 {$ENDIF FPC}
 
 uses
-  Windows, StrUtils;
+  Windows, StrUtils, SysUtils;
 
 type
   PImageThunkData = ^TImageThunkData;
@@ -32,12 +32,22 @@ type
   PIMAGE_IMPORT_DESCRIPTOR = ^IMAGE_IMPORT_DESCRIPTOR;
   TImageImportDescriptor = _IMAGE_IMPORT_DESCRIPTOR;
 
+  ESleepException = class(Exception);
+
 function ImageDirectoryEntryToData(Base: Pointer; MappedAsImage: Boolean;
   DirectoryEntry: Word; var Size: NativeUInt): Pointer; stdcall; external 'imagehlp.dll';
 
 procedure NewSleep(dwMilliseconds:DWORD); stdcall;
+var
+  LCrashPointer: PInteger;
 begin
   WriteLn('New sleep instead of ', dwMilliseconds);
+  if dwMilliseconds = 5 then
+  begin
+    WriteLn('Now we crash');
+    LCrashPointer := nil;
+    LCrashPointer^ := 0;
+  end;
 end;
 
 function Inject: Boolean;

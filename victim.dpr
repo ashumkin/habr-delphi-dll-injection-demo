@@ -7,10 +7,10 @@ library victim;
 uses
   Classes, Windows;
 
-function PrintLine(const AString: PAnsiChar): HRESULT; stdcall;
+function PrintLine(const AString: PAnsiChar; ASleep: DWORD): HRESULT; stdcall;
 begin
-  WriteLn('Sleeping');
-  Sleep(100);
+  WriteLn('Sleeping ', ASleep, ' milliseconds');
+  Sleep(ASleep);
   WriteLn(AString);
   Result := S_OK;
 end;

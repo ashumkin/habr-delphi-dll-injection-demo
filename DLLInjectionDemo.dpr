@@ -19,7 +19,10 @@ type
   { TDLLInjectionDemo }
 
   TDLLInjectionDemo = class(TCustomApplication)
+  private
+    procedure CrashOnException(Sender : TObject; E : Exception);
   protected
+    procedure HandleException(Sender: TObject); override;
     procedure DoRun; override;
   public
     constructor Create(TheOwner: TComponent); override;
@@ -29,9 +32,22 @@ type
 
 { TDLLInjectionDemo }
 
-function PrintLine(const AString: PAnsiChar): HRESULT; stdcall; external 'victim.dll';
+function PrintLine(const AString: PAnsiChar; ASleep: DWORD): HRESULT; stdcall; external 'victim.dll';
 type
   TTryToInjectProc = function: Boolean; stdcall;
+
+procedure TDLLInjectionDemo.CrashOnException(Sender: TObject; E: Exception);
+begin
+  raise E;
+end;
+
+procedure TDLLInjectionDemo.HandleException(Sender: TObject);
+var
+  LExceptObject: TObject;
+begin
+  LExceptObject := ExceptObject;
+  raise Exception(LExceptObject);
+end;
 
 procedure TDLLInjectionDemo.DoRun;
 var
@@ -39,6 +55,8 @@ var
   LLibrary: string;
   LLib: HMODULE;
   LTryToInjectProc: Pointer;
+  LTimeout: Integer;
+  LTempTimeout: Integer;
 begin
   // parse parameters
   if HasOption('h', 'help') then begin
@@ -48,10 +66,17 @@ begin
   end;
 
   LLibraries := GetNonOptions('hi', ['help', 'interactive']);
+  LTimeout := 100;
   for LLibrary in LLibraries do
   begin
+    if TryStrToInt(LLibrary, LTempTimeout) then
+    begin
+      LTimeout := LTempTimeout;
+      WriteLn('Setting timeout ', LTimeout);
+      Continue;
+    end;
     WriteLn('Loading ', LLibrary);
-    LLib := SafeLoadLibrary(LLibrary);
+    LLib := LoadLibrary(PChar(LLibrary));
     if LLib > 0 then
     begin
       LTryToInjectProc := GetProcAddress(LLib, 'TryToInject');
@@ -60,7 +85,7 @@ begin
     end;
   end;
 
-  PrintLine('Any string printed');
+  PrintLine('Any string printed', DWORD(LTimeout));
 
   if HasOption('i', 'interactive') then
   begin
@@ -75,6 +100,7 @@ constructor TDLLInjectionDemo.Create(TheOwner: TComponent);
 begin
   inherited Create(TheOwner);
   StopOnException:=True;
+  OnException := CrashOnException;
 end;
 
 destructor TDLLInjectionDemo.Destroy;
