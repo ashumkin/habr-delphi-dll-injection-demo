@@ -64,6 +64,7 @@ begin
   LVictim := LoadLibrary('victim.dll');
   if LVictim = 0 then
     Exit(False);
+  Result := False;
   LSleepAddress := GetProcAddress(GetModuleHandle('kernel32'), 'Sleep');
   iid := ImageDirectoryEntryToData(Pointer(LVictim), True, IMAGE_DIRECTORY_ENTRY_IMPORT, LSize);
   // Пробегаем по всем элементам таблицы и ищем нашу функцию
@@ -93,7 +94,7 @@ begin
           WriteProcessMemory(GetCurrentProcess, Thunk, @NewSleepPointer, SizeOf(Pointer), LSize);
           // Возвращаем защиту от записи
           VirtualProtect(Thunk, SizeOf(Pointer), Op, Op);
-          Exit(True);
+          Result := True;
         end;
         // Переходим к следующему элементу таблицы импорта
         Inc(PAnsiChar(Thunk), SizeOf(TImageThunkData));
@@ -102,7 +103,6 @@ begin
     // Переходим к следующей таблице импорта
     iid := PImageImportDescriptor(Int64(iid) + SizeOf(TImageImportDescriptor));
   end;
-  Exit(False);
 end;
 
 function TryToInject: BOOL; stdcall;
