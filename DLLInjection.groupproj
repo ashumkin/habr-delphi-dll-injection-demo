@@ -3,9 +3,6 @@
         <ProjectGuid>{204F866B-BEA9-4CA8-BFD4-83BA13D3250C}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
-        <Projects Include="DLLInjectionDemo.dproj">
-            <Dependencies/>
-        </Projects>
         <Projects Include="injector.dproj">
             <Dependencies/>
         </Projects>
@@ -20,15 +17,6 @@
             <Default.Personality/>
         </BorlandProject>
     </ProjectExtensions>
-    <Target Name="DLLInjectionDemo">
-        <MSBuild Projects="DLLInjectionDemo.dproj"/>
-    </Target>
-    <Target Name="DLLInjectionDemo:Clean">
-        <MSBuild Projects="DLLInjectionDemo.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="DLLInjectionDemo:Make">
-        <MSBuild Projects="DLLInjectionDemo.dproj" Targets="Make"/>
-    </Target>
     <Target Name="injector">
         <MSBuild Projects="injector.dproj"/>
     </Target>
@@ -48,13 +36,13 @@
         <MSBuild Projects="victim.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="DLLInjectionDemo;injector;victim"/>
+        <CallTarget Targets="injector;victim"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="DLLInjectionDemo:Clean;injector:Clean;victim:Clean"/>
+        <CallTarget Targets="injector:Clean;victim:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="DLLInjectionDemo:Make;injector:Make;victim:Make"/>
+        <CallTarget Targets="injector:Make;victim:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
