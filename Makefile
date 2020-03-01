@@ -1,8 +1,11 @@
 # vim: set noexpandtab:
 .PHONY: DLLInjectionDemo.c
 
+CC = gcc
+
 LDFLAGS += -g
-ifeq ($(shell uname -o),GNU/Linux)
+LDFLAGS += -lvictim -L.
+ifneq ($(OS),Windows_NT)
 LDFLAGS += -ldl
 endif
 

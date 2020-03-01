@@ -3,53 +3,84 @@
 #include "stdlib.h"
 #include "stdio.h"
 #include "stdarg.h"
+#include "unistd.h"
+#include <dlfcn.h>
 #ifdef __WIN32
   #include "windef.h"
   #include "winbase.h"
 #else
-  #include <dlfcn.h>
   #define LoadLibrary dlopen
   #define GetProcAddress dlsym
+  #define __stdcall
 #endif
 
+int __stdcall PrintLine(char*, int);
+
+void usage(char **argv) {
+    printf("USAGE:\n");
+    printf("  %s [-i] [-L LIBRARY] [-n DELAY]", argv[0]);
+}
+
 int main(int argc, char **argv) {
-    printf("Loading library victim\n");
-    void *LibHandle;
-#ifdef __WIN32
-    LibHandle = LoadLibrary("victim");
-#else
-    LibHandle = LoadLibrary("libvictim.so", RTLD_LAZY);
-#endif
-    if (!LibHandle) {
-       fprintf(stderr, "Unable to load library victim\n");
-       fprintf(stderr, "%s\n", dlerror());
-       exit(EXIT_FAILURE);
+    int delay = 100;
+    int opt;
+    char* lib = 0;
+    int interactive = 0;
+    opterr = 0;
+    while ((opt = getopt(argc, argv, ":iL:n:")) != -1) {
+        switch (opt) {
+            case 'i':
+                interactive = 1;
+                break;
+            case 'n': {
+                char *res;
+                int delay_arg = strtol(optarg, &res, 10);
+                if (argv[optind] != res) {
+                    delay = delay_arg;
+                }
+                break;
+            }
+            case 'L': {
+                lib = optarg;
+                break;
+            }
+            case '?':
+                usage(argv);
+                exit(EXIT_FAILURE);
+                break;
+            case ':':
+                usage(argv);
+                exit(EXIT_FAILURE);
+                break;
+            default:
+                printf("NEXT\n");
+                break;
+        }
     }
-    if (argc > 1) {
+    if (lib) {
         void *InjectorLibHandle;
 #ifdef __WIN32
-            InjectorLibHandle = LoadLibrary(argv[1]);
+        InjectorLibHandle = LoadLibrary(lib);
 #else
-            InjectorLibHandle = LoadLibrary(argv[1], RTLD_LAZY);
+        InjectorLibHandle = LoadLibrary(lib, RTLD_LAZY);
 #endif
-            if (!InjectorLibHandle) {
-               fprintf(stderr, "Unable to load library %s\n", argv[1]);
-               fprintf(stderr, "%s\n", dlerror());
-               exit(EXIT_FAILURE);
-            }
-            BOOL (*TryToInjectFunc)();
+        if (!InjectorLibHandle) {
+           fprintf(stderr, "Unable to load library %s\n", lib);
+           fprintf(stderr, "%s\n", dlerror());
+        } else {
+            int (*TryToInjectFunc)();
             *(void **)&TryToInjectFunc = GetProcAddress(InjectorLibHandle, "TryToInject");
             if (TryToInjectFunc) {
                 TryToInjectFunc();
             }
+        }
     }
-    void (*PrintLineFunc)(char*, int);
-    *(void **)&PrintLineFunc = GetProcAddress(LibHandle, "PrintLine");
-    if (PrintLineFunc) {
-        PrintLineFunc("123\0", 10);
-        PrintLineFunc("CRASH!\0", 5);
+    PrintLine("Done!\0", delay);
+    if (interactive) {
+        printf("Press ENTER...\n");
+        getchar();
     }
 
-    return 0;
+    exit(EXIT_SUCCESS);
 }
 
